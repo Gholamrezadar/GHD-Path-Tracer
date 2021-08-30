@@ -1,0 +1,7 @@
+{
+    "code-runner.runInTerminal": true,
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.executorMap": {
+        "cpp": "cd $dir && g++ $fileName -o ../exec/temp_output && $dir/../exec/temp_output > $dir../renders/temp_output.ppm && eog ./../renders/temp_output.ppm",
+        }
+}

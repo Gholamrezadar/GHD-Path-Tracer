@@ -4,7 +4,22 @@
 
 #include <iostream>
 
+// Detects if a ray r, intersects with a sphere (center, radius)
+bool hit_sphere(const point3& center, double radius, const ray& r){
+    // Refer to 5.1 for the formula  
+    vec3 oc = r.origin() - center;
+    auto a = dot(r.direction(),r.direction());
+    auto b = 2.0 * dot(oc, r.direction());
+    auto c = dot(oc, oc) - radius*radius;
+    auto delta = b*b - 4*a*c;
+    return (delta>0);
+}
+
+// Returns a color for a given ray r
 color ray_color(const ray& r) {
+    // Green if intersects with a sphere : c=(0,0,-1), r=0.5
+    if (hit_sphere(point3(0,0,-1), 0.5, r))
+        return color(0.1137, 0.8196, 0.6313);
     // Get unit vector of rays direction
     vec3 unit_direction = unit_vector(r.direction());
     // Remap ray.y from 0-1 to 0.5-1.0
@@ -51,7 +66,7 @@ int main()
             // Viewports UV coordinate
             auto u = double(i) / (image_width-1);
             auto v = double(j) / (image_height-1);
-            
+
             // A ray going through the current pixel
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             color pixel_color = ray_color(r);
