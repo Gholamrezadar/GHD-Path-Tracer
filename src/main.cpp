@@ -6,18 +6,17 @@
 
 // Detects if a ray r, intersects with a sphere (center, radius) and return its hit distance from camera
 double hit_sphere(const point3& center, double radius, const ray& r){
-    // Refer to 5.1 for the formula  
+    // Refer to 6.2 for the formula  
     vec3 oc = r.origin() - center;
-    auto a = dot(r.direction(),r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius*radius;
-    auto delta = b*b - 4*a*c;
+    auto a = r.direction().length_squared();
+    auto half_b = dot(oc, r.direction());
+    auto c = oc.length_squared() - radius*radius;
+    auto discriminant = half_b*half_b - a*c;
 
-    if (delta<0){
-        return -1;
-    }
-    else{
-        return (-b - sqrt(delta))/(2.0*a);
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-half_b - sqrt(discriminant) ) / a;
     }
 }
 
