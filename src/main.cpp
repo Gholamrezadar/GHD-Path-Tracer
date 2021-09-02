@@ -4,28 +4,37 @@
 
 #include <iostream>
 
-// Detects if a ray r, intersects with a sphere (center, radius)
-bool hit_sphere(const point3& center, double radius, const ray& r){
+// Detects if a ray r, intersects with a sphere (center, radius) and return its hit distance from camera
+double hit_sphere(const point3& center, double radius, const ray& r){
     // Refer to 5.1 for the formula  
     vec3 oc = r.origin() - center;
     auto a = dot(r.direction(),r.direction());
     auto b = 2.0 * dot(oc, r.direction());
     auto c = dot(oc, oc) - radius*radius;
     auto delta = b*b - 4*a*c;
-    return (delta>0);
+
+    if (delta<0){
+        return -1;
+    }
+    else{
+        return (-b - sqrt(delta))/(2.0*a);
+    }
 }
 
 // Returns a color for a given ray r
 color ray_color(const ray& r) {
+    // Sphere :
     // Green if intersects with a sphere : c=(0,0,-1), r=0.5
-    // if (hit_sphere(point3(0,0,-1), 0.5, r))
-    //     return color(0.1137, 0.8196, 0.6313);
+    if (hit_sphere(point3(0,0,-1), 0.5, r)>0.0)
+        return color(0.1137, 0.8196, 0.6313);
+
+    // Sky :
     // Get unit vector of rays direction
     vec3 unit_direction = unit_vector(r.direction());
     // Remap ray.y from -1 to 1 to 0.0 to 1.0
     auto t = 0.5*(unit_direction.y() + 1.0);
     // Interpolate between white(bottom) and blue(top) based on y component of each ray
-    return (1.0-t)*color(1.0, 0.0, 0.0) + t*color(0,0, 1.0);
+    return t*color(34/255.0, 47/255.0, 62/255.0) + (1.0-t)*color(131/255.0, 149/255.0, 167/255.0);
 }
 
 int main()
