@@ -18,14 +18,14 @@ bool hit_sphere(const point3& center, double radius, const ray& r){
 // Returns a color for a given ray r
 color ray_color(const ray& r) {
     // Green if intersects with a sphere : c=(0,0,-1), r=0.5
-    if (hit_sphere(point3(0,0,-1), 0.5, r))
-        return color(0.1137, 0.8196, 0.6313);
+    // if (hit_sphere(point3(0,0,-1), 0.5, r))
+    //     return color(0.1137, 0.8196, 0.6313);
     // Get unit vector of rays direction
     vec3 unit_direction = unit_vector(r.direction());
-    // Remap ray.y from 0-1 to 0.5-1.0
+    // Remap ray.y from -1 to 1 to 0.0 to 1.0
     auto t = 0.5*(unit_direction.y() + 1.0);
     // Interpolate between white(bottom) and blue(top) based on y component of each ray
-    return (1.0-t)*color(0.0, 0.0, 0.0) + t*color(0.5, 0.7, 1.0);
+    return (1.0-t)*color(1.0, 0.0, 0.0) + t*color(0,0, 1.0);
 }
 
 int main()
