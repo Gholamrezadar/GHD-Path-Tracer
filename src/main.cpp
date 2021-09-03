@@ -1,6 +1,6 @@
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
+#include "utils/color.h"
+#include "utils/ray.h"
+#include "utils/vec3.h"
 
 #include <iostream>
 
