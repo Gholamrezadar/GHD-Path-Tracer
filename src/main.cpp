@@ -5,7 +5,19 @@
 #include "primitives/sphere.h"
 #include "primitives/camera.h"
 
+//time
+#include <chrono>
+#include <sys/time.h>
+#include <ctime>
+
 #include <iostream>
+
+//time
+using std::cout; using std::endl;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::seconds;
+using std::chrono::system_clock;
 
 // Returns a color for a given ray r
 color ray_color(const ray& r, const hittable& world) {
@@ -23,10 +35,9 @@ int main()
 
     // Image
     const auto aspect_ratio = 16.0 / 9.0;
-    const int image_width = 400;
+    const int image_width = 888;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 100;
-
 
     // World
     hittable_list world;
@@ -43,10 +54,19 @@ int main()
     std::cout << "P3\n"
               << image_width << ' ' << image_height << "\n255\n";
 
+    // time before rendering
+    auto start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    auto end_time = start_time;
+    auto eta = 0;
     // Loop over pixels
     for (int j = image_height - 1; j >= 0; --j)
     {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        std::cerr << "\rScanlines remaining: " << j << ' ';
+        end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        // eta = ((end_time-start_time)/1000)*((image_height/(image_height -1 - j + 1))-1);
+        eta = j*((end_time-start_time)/1000) / (image_height-j);
+        std::cerr << "\rETA: " << eta << " sec " << std::flush;
+
         for (int i = 0; i < image_width; ++i)
         {
             color pixel_color(0, 0, 0);
@@ -64,5 +84,7 @@ int main()
         }
     }
 
-    std::cerr << "\nDone.\n";
+    end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+
+    std::cerr << "\nDone. in "<< (end_time - start_time)/1000<<" sec\n";
 }
