@@ -86,7 +86,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://instagram.com/gholamreza_dar) - gholamrezadar@gmail.com
+Gholamreza Dar - [@gholamreza_dar](https://instagram.com/gholamreza_dar) - gholamrezadar@gmail.com
 
 Project Link: [https://github.com/Gholamrezadar/GHD-Path-Tracer](https://github.com/Gholamrezadar/GHD-Path-Tracer)
 
