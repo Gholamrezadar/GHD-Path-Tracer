@@ -76,9 +76,6 @@ all of these can be accessed in the ```tools``` folder.
 - [ ] BVH
 - [ ] Code cleanup
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
-
-
 <!-- LICENSE -->
 ## License
 
