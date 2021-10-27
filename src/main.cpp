@@ -6,12 +6,14 @@
 #include "primitives/camera.h"
 #include "utils/material.h"
 
+
 //time
 #include <chrono>
 #include <sys/time.h>
 #include <ctime>
 
 #include <iostream>
+#include <vector> 
 
 //time
 using std::cout; using std::endl;
@@ -19,6 +21,17 @@ using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::seconds;
 using std::chrono::system_clock;
+
+std::vector < std::vector<double> > generate_spheres(double scale){
+    // Z, Y, X, R
+    std::vector < std::vector<double> > spheres{
+        {-1,0,1,0.5},
+        {0,0,0,0.5},
+        {1,0,0,0.5},
+    };
+
+    return spheres;
+}
 
 // Returns a color for a given ray r
 color ray_color(const ray& r, const hittable& world, int depth) {
@@ -38,6 +51,47 @@ color ray_color(const ray& r, const hittable& world, int depth) {
     vec3 unit_direction = unit_vector(r.direction());
     auto t = 0.5*(unit_direction.y() + 1.0);
     return (1.0-t)*color(1.0, 1.0, 1.0) + t*color(0.5, 0.7, 1.0);
+}
+
+hittable_list GHD_scene(){
+    hittable_list world;
+    // Ground
+    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+
+    // list of x,y,z,R s
+    std::vector < std::vector<double> > spheres = generate_spheres(1.0);
+
+    // for each sphere on that list
+    for (int i = 0; i < spheres.size(); i++)
+    {
+        auto choose_mat = random_double();
+        point3 center(spheres[i][0],
+                      spheres[i][1],
+                      spheres[i][2]);
+
+        // select a random material
+        shared_ptr<material> sphere_material;
+        if (choose_mat < 0.8) {
+            // diffuse
+            auto albedo = color::random() * color::random();
+            sphere_material = make_shared<lambertian>(albedo);
+        } else if (choose_mat < 0.95) {
+            // metal
+            auto albedo = color::random(0.5, 1);
+            auto fuzz = random_double(0, 0.5);
+            sphere_material = make_shared<metal>(albedo, fuzz);
+        } else {
+            // glass
+            sphere_material = make_shared<dielectric>(1.5);
+            
+        }
+
+        // create ith sphere and give it a random material 
+        world.add(make_shared<sphere>(center, spheres[i][3], sphere_material));
+        
+    }
+    return world;
 }
 
 hittable_list random_scene() {
@@ -89,12 +143,15 @@ hittable_list random_scene() {
 int main()
 {
 
+    // set random seed 
+    srand (69);
+
     // Image
     const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 400;
+    const int image_width = 200;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 50;
-    const int max_depth = 25;
+    const int samples_per_pixel = 10;
+    const int max_depth = 5;
 
     // World
     // W1) a plane and a sphere on top
@@ -110,7 +167,6 @@ int main()
     // auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
     // auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
     // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
-
     // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
     // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
@@ -122,7 +178,6 @@ int main()
     // auto material_center = make_shared<dielectric>(1.5);
     // auto material_left   = make_shared<dielectric>(1.5);
     // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
-
     // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
     // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
@@ -134,7 +189,6 @@ int main()
     // auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
     // auto material_left   = make_shared<dielectric>(1.5);
     // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
-
     // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
     // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),  -0.4, material_left));
@@ -143,15 +197,18 @@ int main()
     // W4) FOV Test Scene
     // auto R = cos(pi/4);
     // hittable_list world;
-
     // auto material_left  = make_shared<lambertian>(color(0,0,1));
     // auto material_right = make_shared<lambertian>(color(1,0,0));
-
     // world.add(make_shared<sphere>(point3(-R, 0, -1), R, material_left));
     // world.add(make_shared<sphere>(point3( R, 0, -1), R, material_right));
 
     //W5) Cover Scene - Random Spheres with random materials
-    auto world = random_scene();
+    // auto world = random_scene();
+
+    //W6) GHD Scene
+    auto world = GHD_scene();
+
+    srand(time(NULL));
 
     // Camera
     point3 lookfrom(13,2,3);
