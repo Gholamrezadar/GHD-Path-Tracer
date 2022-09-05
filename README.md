@@ -2,7 +2,6 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
 A simple Path Tracer built for educational purposes by following the ["Ray Tracing in one weekend"](https://raytracing.github.io/books/RayTracingInOneWeekend.html) Book By Peter Shirley. 
 
 (Spoiler : Takes more then "a" weekend!)
