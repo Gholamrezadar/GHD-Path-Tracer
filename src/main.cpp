@@ -6,25 +6,26 @@
 #include "primitives/camera.h"
 #include "utils/material.h"
 
-
-//time
+// time
 #include <chrono>
 #include <sys/time.h>
 #include <ctime>
 
 #include <iostream>
-#include <vector> 
+#include <vector>
 
-//time
-using std::cout; using std::endl;
+// time
+using std::cout;
+using std::endl;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 
-std::vector < std::vector<double> > generate_spheres(double scale){
+std::vector<std::vector<double>> generate_spheres(double scale)
+{
     // Z, Y, X, R
-    std::vector < std::vector<double> > spheres{
+    std::vector<std::vector<double>> spheres{
         {-0.4518, -0.0159, 0.1662, 0.1575},
         {-0.422, -0.0159, 0.6069, 0.1465},
         {-0.4518, -0.0159, 1.4322, 0.1575},
@@ -427,40 +428,43 @@ std::vector < std::vector<double> > generate_spheres(double scale){
         {-1.002, -0.0159, 0.0812, 0.0131},
         {-1.5586, -0.0159, 1.3487, 0.0171},
         {-1.5505, -0.0159, 1.6041, -0.0118},
-        {-1.4813, -0.0159, 1.607, -0.0118}
-    };
+        {-1.4813, -0.0159, 1.607, -0.0118}};
 
     return spheres;
 }
 
 // Returns a color for a given ray r
-color ray_color(const ray& r, const hittable& world, int depth) {
+color ray_color(const ray &r, const hittable &world, int depth)
+{
     hit_record rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if (depth <= 0)
-        return color(0,0,0);
+        return color(0, 0, 0);
 
-    if (world.hit(r, 0.001, infinity, rec)) {
+    if (world.hit(r, 0.001, infinity, rec))
+    {
         ray scattered;
         color attenuation;
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
-            return attenuation * ray_color(scattered, world, depth-1);
-        return color(0,0,0);
+            return attenuation * ray_color(scattered, world, depth - 1);
+        return color(0, 0, 0);
     }
     vec3 unit_direction = unit_vector(r.direction());
-    auto t = 0.5*(unit_direction.y() + 1.0);
-    return (1.0-t)*color(1.0, 1.0, 1.0) + t*color(0.5, 0.7, 1.0);
+    auto t = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
-hittable_list GHD_scene(){
+// Scenes
+hittable_list GHD_scene()
+{
     hittable_list world;
     // Ground
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
 
     // list of x,y,z,R s
-    std::vector < std::vector<double> > spheres = generate_spheres(1.0);
+    std::vector<std::vector<double>> spheres = generate_spheres(1.0);
 
     // for each sphere on that list
     for (int i = 0; i < spheres.size(); i++)
@@ -469,58 +473,70 @@ hittable_list GHD_scene(){
         // axis mismatch fix
         point3 center(spheres[i][1],
                       spheres[i][2],
-                      -1*spheres[i][0]);
+                      -1 * spheres[i][0]);
 
         // select a random material
         shared_ptr<material> sphere_material;
-        if (choose_mat < 0.8) {
+        if (choose_mat < 0.8)
+        {
             // diffuse
             auto albedo = color::random() * color::random();
             sphere_material = make_shared<lambertian>(albedo);
-        } else if (choose_mat < 0.99) {
+        }
+        else if (choose_mat < 0.99)
+        {
             // metal
             auto albedo = color::random(0.5, 1);
             auto fuzz = random_double(0, 0.5);
             sphere_material = make_shared<metal>(albedo, fuzz);
-        } else {
+        }
+        else
+        {
             // glass
             sphere_material = make_shared<dielectric>(1.5);
-            
         }
 
-        // create ith sphere and give it a random material 
+        // create ith sphere and give it a random material
         world.add(make_shared<sphere>(center, spheres[i][3], sphere_material));
-        
     }
     return world;
 }
 
-hittable_list random_scene() {
+hittable_list random_scene()
+{
     hittable_list world;
 
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
+    for (int a = -11; a < 11; a++)
+    {
+        for (int b = -11; b < 11; b++)
+        {
             auto choose_mat = random_double();
-            point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+            point3 center(a + 0.9 * random_double(), 0.2, b + 0.9 * random_double());
 
-            if ((center - point3(4, 0.2, 0)).length() > 0.9) {
+            if ((center - point3(4, 0.2, 0)).length() > 0.9)
+            {
                 shared_ptr<material> sphere_material;
 
-                if (choose_mat < 0.8) {
+                if (choose_mat < 0.8)
+                {
                     // diffuse
                     auto albedo = color::random() * color::random();
                     sphere_material = make_shared<lambertian>(albedo);
                     world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else if (choose_mat < 0.95) {
+                }
+                else if (choose_mat < 0.95)
+                {
                     // metal
                     auto albedo = color::random(0.5, 1);
                     auto fuzz = random_double(0, 0.5);
                     sphere_material = make_shared<metal>(albedo, fuzz);
                     world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else {
+                }
+                else
+                {
                     // glass
                     sphere_material = make_shared<dielectric>(1.5);
                     world.add(make_shared<sphere>(center, 0.2, sphere_material));
@@ -541,80 +557,110 @@ hittable_list random_scene() {
     return world;
 }
 
+hittable_list floor_sphere_scene()
+{
+    hittable_list world;
+    auto material_ground = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_ball = make_shared<lambertian>(color(0.8, 0.15, 0.05));
+    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5, material_ball));
+    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground));
+    return world;
+}
+
+hittable_list three_spheres_scene()
+{
+    hittable_list world;
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    auto material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
+    world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
+    return world;
+}
+
+hittable_list three_spheres_scene2()
+{
+    hittable_list world;
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<dielectric>(1.5);
+    auto material_left = make_shared<dielectric>(1.5);
+    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+    world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
+    return world;
+}
+
+hittable_list three_spheres_scene2()
+{
+    hittable_list world;
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
+    auto material_left = make_shared<dielectric>(1.5);
+    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
+    world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), -0.4, material_left));
+    world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
+    return world;
+}
+
+hittable_list three_spheres_scene2()
+{
+    auto R = cos(pi / 4);
+    hittable_list world;
+    auto material_left = make_shared<lambertian>(color(0, 0, 1));
+    auto material_right = make_shared<lambertian>(color(1, 0, 0));
+    world.add(make_shared<sphere>(point3(-R, 0, -1), R, material_left));
+    world.add(make_shared<sphere>(point3(R, 0, -1), R, material_right));
+    return world;
+}
+
 int main()
 {
 
-    // set random seed 
-    srand (69);
+    // set random seed
+    srand(69);
 
     // Image
     const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 1024;
+    const int image_width = 512;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 50;
-    const int max_depth = 8;
+    const int samples_per_pixel = 1;
+    const int max_depth = 1;
 
     // World
     // W1) a plane and a sphere on top
-    // hittable_list world;
-    // auto material_ground = make_shared<metal>(color(0.8, 0.8, 0.8));
-    // auto material_ball = make_shared<lambertian>(color(0.8, 0.15, 0.05));
-    // world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_ball));
-    // world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
+    auto world = floor_sphere_scene();
 
     // W2) three spheres - one lambertian center and two metals on each side
-    // hittable_list world;
-    // auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    // auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-    // auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
-    // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
-    // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
-    // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
-    // world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
+    // auto world = three_spheres_scene();
 
     // W3) three spheres - one metal to the right and two dielectrics on its left
-    // hittable_list world;
-    // auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    // auto material_center = make_shared<dielectric>(1.5);
-    // auto material_left   = make_shared<dielectric>(1.5);
-    // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
-    // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
-    // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
-    // world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
+    // auto world = three_spheres_scene2();
 
     // W3) three spheres - one metal to the right lambertian in the middle and a hollow glass on the left
-    // hittable_list world;
-    // auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    // auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
-    // auto material_left   = make_shared<dielectric>(1.5);
-    // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
-    // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
-    // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),  -0.4, material_left));
-    // world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
+    // auto world = three_spheres_scene3();
 
     // W4) FOV Test Scene
-    // auto R = cos(pi/4);
-    // hittable_list world;
-    // auto material_left  = make_shared<lambertian>(color(0,0,1));
-    // auto material_right = make_shared<lambertian>(color(1,0,0));
-    // world.add(make_shared<sphere>(point3(-R, 0, -1), R, material_left));
-    // world.add(make_shared<sphere>(point3( R, 0, -1), R, material_right));
+    // auto world = fov_scene();
 
-    //W5) Cover Scene - Random Spheres with random materials
-    // auto world = random_scene();
+    // W5) Cover Scene - Random Spheres with random materials
+    //  auto world = random_scene();
 
-    //W6) GHD Scene
-    auto world = GHD_scene();
+    // W6) GHD Scene
+    // auto world = GHD_scene();
 
     srand(time(NULL));
 
     // Camera
-    point3 lookfrom(13,2,3);
-    point3 lookat(0,0,0);
-    vec3 vup(0,1,0);
+    point3 lookfrom(13, 2, 3);
+    point3 lookat(0, 0, 0);
+    vec3 vup(0, 1, 0);
     auto dist_to_focus = 12.0;
     auto aperture = 0.1;
 
@@ -639,21 +685,22 @@ int main()
         // time_remaining = time_elapsed *
         //                  row_remaining /
         //                  rows_elapsed
-        eta = static_cast<float>((end_time-start_time)) *
+        eta = static_cast<float>((end_time - start_time)) *
               static_cast<float>(j) /
-              static_cast<float>(image_height-j) /
+              static_cast<float>(image_height - j) /
               1000.0;
-              
 
-        std::cerr << "\rETA: " << eta << " sec " <<" | "<<(image_height-j)<<"/"<<image_height<< std::flush;
+        std::cerr << "\rETA: " << eta << " sec "
+                  << " | " << (image_height - j) << "/" << image_height << std::flush;
 
         for (int i = 0; i < image_width; ++i)
         {
             color pixel_color(0, 0, 0);
-            for (int s = 0; s < samples_per_pixel; ++s) {
+            for (int s = 0; s < samples_per_pixel; ++s)
+            {
                 // Screen UV coordinates
-                auto u = (i + random_double()) / (image_width-1);
-                auto v = (j + random_double()) / (image_height-1);
+                auto u = (i + random_double()) / (image_width - 1);
+                auto v = (j + random_double()) / (image_height - 1);
                 ray r = cam.get_ray(u, v);
 
                 // Add the color of every sample to current pixels color
@@ -666,5 +713,5 @@ int main()
 
     end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
-    std::cerr << "\nDone. in "<< (end_time - start_time)/1000<<" sec\n";
+    std::cerr << "\nDone. in " << (end_time - start_time) / 1000 << " seconds\n";
 }

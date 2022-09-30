@@ -54,4 +54,9 @@
             "streambuf": "cpp",
             "typeinfo": "cpp"
         }
+
+        "indentRainbow.excludedLanguages": [
+            "cpp"
+        ]
 }
+
