@@ -560,7 +560,7 @@ hittable_list random_scene()
 hittable_list floor_sphere_scene()
 {
     hittable_list world;
-    auto material_ground = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_ground = make_shared<metal>(color(0.8, 0.8, 0.8), 0.35);
     auto material_ball = make_shared<lambertian>(color(0.8, 0.15, 0.05));
     world.add(make_shared<sphere>(point3(0, 0, -1), 0.5, material_ball));
     world.add(make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground));
@@ -572,8 +572,8 @@ hittable_list three_spheres_scene()
     hittable_list world;
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-    auto material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
-    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
+    auto material_left = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
+    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 0.3);
     world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
     world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
@@ -595,7 +595,7 @@ hittable_list three_spheres_scene2()
     return world;
 }
 
-hittable_list three_spheres_scene2()
+hittable_list three_spheres_scene3()
 {
     hittable_list world;
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
@@ -609,7 +609,7 @@ hittable_list three_spheres_scene2()
     return world;
 }
 
-hittable_list three_spheres_scene2()
+hittable_list fov_scene()
 {
     auto R = cos(pi / 4);
     hittable_list world;
@@ -630,8 +630,8 @@ int main()
     const auto aspect_ratio = 3.0 / 2.0;
     const int image_width = 512;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 1;
-    const int max_depth = 1;
+    const int samples_per_pixel = 16;
+    const int max_depth = 2;
 
     // World
     // W1) a plane and a sphere on top
