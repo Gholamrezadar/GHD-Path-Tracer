@@ -1,0 +1,1 @@
+g++ src/main.cpp -o exec/temp_output.exe -O2 & exec\temp_output.exe > tmp_img_3.ppm
