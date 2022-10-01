@@ -54,13 +54,13 @@ int main()
 
     // Image
     const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 512;
+    const int image_width = 1000;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 16;
-    const int max_depth = 2;
+    const int samples_per_pixel = 64;
+    const int max_depth = 3;
 
     // World
-    auto world = Scenes::floor_sphere_scene();
+    auto world = Scenes::three_spheres_motion_blur_scene();
 
     srand(time(NULL));
 
@@ -71,7 +71,7 @@ int main()
     auto dist_to_focus = 12.0;
     auto aperture = 0.1;
 
-    camera cam(lookfrom, lookat, vup, 19, aspect_ratio, aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vup, 19, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     // Render
 
