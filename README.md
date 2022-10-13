@@ -12,6 +12,9 @@ The Rendered Image was a combination (Mean) of 6 instances of the program runnin
 
 Total Render Time  : ```30 minutes @ 3.4 GHz```
 
+WIP: GUI is being developed on the `gui` branch.
+![gui gif](https://github.com/Gholamrezadar/GHD-Path-Tracer/blob/gui/pathtracerv1.gif?raw=true)
+
 Settings:
 ```c++
 // Image
