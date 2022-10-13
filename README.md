@@ -1,2 +1,5 @@
 # GHD-Path-Tracer gui version
-A simple Path Tracer built for educational purposes by following the "Ray Tracing in one weekend" Book.
+WIP working on adding GUI using DearImGui to the pathtracer.
+
+current status:
+![gif](/pathtracerv1.gif)
